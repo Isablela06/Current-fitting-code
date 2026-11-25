@@ -21,6 +21,13 @@ OUTPUT_DIR = Path("DepthDosePlots")
 MESH_NAMES = "WaterBackMesh"
 N_MESHES = 13
 
+#Total Depth for the meshes for translation from mesh number to physcial depth in sample
+#i.e if the first mesh begins at x = 0cm and the last mesh ends at x = 13cm then total depth is 13cm
+TOTAL_DEPTH = 14
+
+#unit for above given total depth i.e. cm, mm, m, etc...
+DEPTH_UNIT = "cm"
+
 #number of beams in each direction
 #must be odd and at least 3, with the central beam at x = 0, y = 0
 #for example, 3 beams in x and 5 in y gives a 3x5 grid centred on (0, 0)
@@ -189,6 +196,7 @@ depth_y_positions = None
 for mesh_number in range(1, N_MESHES + 1):
     #adds the current mesh number to the mesh name prefix
     mesh_name = MESH_NAMES + str(mesh_number)
+    mesh_depth = mesh_number * TOTAL_DEPTH / N_MESHES
 
     #gets the histogram for the current mesh
     h = histograms[f'Event/MergedHistograms/{mesh_name}-ProtonInteraction']
@@ -364,7 +372,7 @@ for mesh_number in range(1, N_MESHES + 1):
 
     #adds the fit quality and pvdr values to the plot title
     ax.set_title(
-        f"{mesh_name}: 2D Fixed-Centre Gaussian Fit\n"
+        f"Depth = {mesh_depth:.4g} {DEPTH_UNIT}: 2D Fixed-Centre Gaussian Fit\n"
         f"Raw PVDR = {raw_metrics['PVDR']:.4g}, "
         f"Fitted PVDR = {fitted_metrics['PVDR']:.4g}\n"
         f"reduced χ² = {reduced_chi_squared:.3g}"
@@ -422,7 +430,9 @@ for mesh_number in range(1, N_MESHES + 1):
 
     #adds a colour scale and labels the position axes
     fig.colorbar(dose_image, ax=ax, label="Dose per second / Gy s⁻¹")
-    ax.set_title(f"{mesh_name}: Original Dose and Fitted Points")
+    ax.set_title(
+        f"Depth = {mesh_depth:.4g} {DEPTH_UNIT}: Original Dose and Fitted Points"
+    )
     ax.set_xlabel("Transverse displacement x / mm")
     ax.set_ylabel("Transverse displacement y / mm")
     ax.set_aspect("equal", adjustable="box")
