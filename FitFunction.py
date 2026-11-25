@@ -21,6 +21,10 @@ OUTPUT_DIR = Path("DepthDosePlots")
 MESH_NAMES = "WaterBackMesh"
 N_MESHES = 13
 
+#Total depth across all meshes and its unit
+TOTAL_DEPTH = 14
+DEPTH_UNIT = "cm"
+
 # Must be odd, must be positive, must be at least 3
 # assumes central beam at X = 0, Y = 0 
 # i.e. numbeams 3 gives a 1x3 grid of beams extending in +ve and -ve y direction
@@ -171,6 +175,7 @@ for mesh_number in range(1, N_MESHES + 1):
     #mesh_name is a concatination of the MESH_NAMES prefix and the current mesh_number inline
     #with naming convention of MESH_NAMES1, MESH_NAMES2, ..., MESH_NAMES_NMESHES
     mesh_name = MESH_NAMES + str(mesh_number)
+    mesh_depth = mesh_number * TOTAL_DEPTH / N_MESHES
 
     #strips out just the histogram we are looking for out of the list of all histograms
     h = histograms[f'Event/MergedHistograms/{mesh_name}-ProtonInteraction']
@@ -257,7 +262,12 @@ for mesh_number in range(1, N_MESHES + 1):
     ax.errorbar(fitted_metrics["valley_positions"],fitted_metrics["valley_averages"],fmt="v",color="green",markersize=7,capsize=3,label="Fitted valleys (fit)")
 
     #finishes the plot with labels, title, legend, grid and saves it to the output directory
-    ax.set_title(f"{mesh_name}: Fixed-Centre Gaussian Fit\n"f"Raw PVDR = {raw_metrics['PVDR']:.4g}, Fitted PVDR = {fitted_metrics['PVDR']:.4g}\n"f"reduced χ² = {reduced_chi_squared:.3g}")
+    ax.set_title(
+        f"Depth = {mesh_depth:.4g} {DEPTH_UNIT}: Fixed-Centre Gaussian Fit\n"
+        f"Raw PVDR = {raw_metrics['PVDR']:.4g}, "
+        f"Fitted PVDR = {fitted_metrics['PVDR']:.4g}\n"
+        f"reduced χ² = {reduced_chi_squared:.3g}"
+    )
 
     ax.set_xlabel("Transverse displacement x / mm")
     ax.set_ylabel("Dose per second / Gy s⁻¹")
